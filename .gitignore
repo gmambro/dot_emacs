@@ -10,6 +10,7 @@ Thumbs.db
 *.bak
 
 localconfig.el
+custom.el
 
 auto-save-list
 elpa
@@ -22,3 +23,4 @@ places
 recentf
 tutorial
 completions
+flycheck_init.el
