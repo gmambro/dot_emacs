@@ -5,6 +5,12 @@
 
 
 (push "~/.emacs.d/libs" load-path)
+;; Load custom file
+(setq custom-file "~/.emacs.d/localconfig.el")
+(load custom-file)
+
+
+
 
 ;; Enable/disable commands
 ;; TODO Review
@@ -154,6 +160,10 @@
 ;;(setq spacemacs-theme-org-height nil)
 ;; My previous theme (load-theme 'wombat)
 
+
+(ignore-errors
+  (server-start))
+
 ;;; init.el ends here
 
 (custom-set-variables
@@ -164,9 +174,8 @@
  '(package-selected-packages
    '(swiper spacemacs-theme ivy auto-package-update cargo markdown-mode flycheck-inline flycheck-inline-mode use-package flycheck-rust rust-mode))
  '(show-paren-mode t)
- '(tramp-default-host "devvm940.lla0")
- '(tramp-default-method "sshx")
- '(tramp-default-user "gmambro"))
+ 
+ )
 
 
 (custom-set-faces
