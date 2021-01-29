@@ -5,8 +5,8 @@
 
 
 ; https://www.reddit.com/r/emacs/comments/3kqt6e/2_easy_little_known_steps_to_speed_up_emacs_start/
-(defvar modi/gc-cons-threshold--orig gc-cons-threshold)
 (setq gc-cons-threshold (* 100 1024 1024)) ;100 MB before garbage collection
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 (push "~/.emacs.d/libs" load-path)
 
@@ -17,7 +17,15 @@
 ;; (mapc 'load (file-expand-wildcards "~/.emacs.d/init/*.el"))
 
 ;; override local stuff
-(load "~/.emacs.d/localconfig.el")
+(if
+    (file-exists-p  "~/.emacs.d/localconfig.el")
+    (load "~/.emacs.d/localconfig.el")
+  )
+
+
+(setq exec-path (append exec-path '( (expand-file-name  "~/.local/bin")
+                                     (expand-file-name "~/.cargo/bin"))))
+
 
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
@@ -109,7 +117,6 @@
   )
 
 (use-package swiper
-  :ensure t
   :config
   (global-set-key "\C-s" 'swiper))
 
@@ -129,11 +136,11 @@
 ;  :hook ('flycheck-mode-hook . #'flycheck-inline-mode)
 ;  )
 
-(use-package org :ensure t
+(use-package org
   :mode ("\\.org$'" . org-mode)
   )
 
-(use-package recentf :ensure t)
+(use-package recentf)
 
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 (use-package recentf
@@ -146,10 +153,10 @@
         recentf-auto-cleanup 'never)
   (recentf-mode +1))
 
-(use-package toml-mode :ensure t)
+(use-package toml-mode )
 
-(use-package rust-mode :ensure t
-  :hook (rust-mode . lsp)
+(setenv "RUST_LOG" "rls=debug")
+(use-package rust-mode
   :config
   (setq rust-format-on-save t)
   )
@@ -159,22 +166,28 @@
   )
 (use-package cargo
   :hook (rust-mode . cargo-minor-mode))
+(use-package flycheck-rust
+  :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+(use-package yasnippet)
 
 (use-package lsp-mode
   :hook
   (python-mode . lsp)
+  (rust-mode . lsp)
   :commands lsp
   :config
   (setq lsp-enable-file-watchers nil)
-  (setq lsp-rust-rls-server-command (quote ("~/.cargo/bin/rustup  run stable rls")))
   (setq lsp-rust-clear-env-rust-log nil)
+  (setq lsp-prefer-capf t)
+  (setq lsp-completion-enable t)
+  (setq lsp-idle-delay 0.500)
   )
-
-(use-package lsp-ui :ensure t :commands lsp-ui-mode)
-(use-package company-lsp :ensure t :commands company)
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-ui  :commands lsp-ui-mode)
+(use-package company-lsp :commands company)
 
 (use-package markdown-mode
-  :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
