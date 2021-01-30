@@ -8,6 +8,13 @@
 (setq gc-cons-threshold (* 100 1024 1024)) ;100 MB before garbage collection
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
+
+
+;;----------------------------------------------------------------------
+;; Paths and extra config files
+;;----------------------------------------------------------------------
+
+
 (push "~/.emacs.d/libs" load-path)
 
 ;; Set custom file
@@ -26,6 +33,7 @@
 (setq exec-path (append exec-path '( (expand-file-name  "~/.local/bin")
                                      (expand-file-name "~/.cargo/bin"))))
 
+;;----------------------------------------------------------------------
 
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
@@ -62,13 +70,10 @@
 ;; view simpler column numbers
 (column-number-mode t)
 
-;; switch multiple buffer with typeahead using C-x b
-(require 'ido)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-
-(push "/Users/gmambro/.cargo/bin" exec-path)
-
+;;----------------------------------------------------------------------
 ;; bootstrap packages and use-package
+;;----------------------------------------------------------------------
+
 (require 'package)
 (setq package-archive-priorities
    (quote
@@ -97,7 +102,33 @@
   (setq auto-package-update-hide-results t)
   (auto-package-update-maybe))
 
+;;----------------------------------------------------------------------
 
+;; Company
+(use-package company)
+;  :after lsp-mode
+;  :hook (lsp-mode . company-mode)
+;  :bind (:map company-active-map
+;         ("<tab>" . company-complete-selection))
+;        (:map lsp-mode-map
+;         ("<tab>" . company-indent-or-complete-common))
+;  :custom
+;  (company-minimum-prefix-length 1)
+;  (company-idle-delay 0.0))
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+;; Flycheck
+(use-package flycheck
+  :hook (prog-mode . flycheck-mode)
+  )
+(use-package
+  flycheck-inline
+  :ensure t
+  :hook ('flycheck-mode-hook . #'flycheck-inline-mode)
+  )
+
+;; Ivy/Swiper
 (use-package ivy
   :diminish
   :bind (
@@ -112,36 +143,20 @@
          )
   :config
   (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
+  ;(setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
   )
-
 (use-package swiper
   :config
   (global-set-key "\C-s" 'swiper))
 
 
-(use-package flycheck
-  :hook (prog-mode . flycheck-mode)
-  )
-
-(use-package company
-  :hook (prog-mode . company-mode)
-  :config (setq company-tooltip-align-annotations t)
-          (setq company-minimum-prefix-length 1))
-
-;(use-package
-;  flycheck-inline
-;  :ensure t
-;  :hook ('flycheck-mode-hook . #'flycheck-inline-mode)
-;  )
-
+;; Org mode
 (use-package org
   :mode ("\\.org$'" . org-mode)
   )
 
-(use-package recentf)
-
+;; Recentf
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 (use-package recentf
   :config
@@ -153,39 +168,71 @@
         recentf-auto-cleanup 'never)
   (recentf-mode +1))
 
-(use-package toml-mode )
+;; Treemacs
+(use-package treemacs
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (progn
 
+    ;; The default width and height of the icons is 22 pixels. If you are
+    ;; using a Hi-DPI display, uncomment this to double the icon size.
+    ;;(treemacs-resize-icons 44)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode 'always)
+    (pcase (cons (not (null (executable-find "git")))
+                 (not (null treemacs-python-executable)))
+      (`(t . t)
+       (treemacs-git-mode 'deferred))
+      (`(t . _)
+       (treemacs-git-mode 'simple))))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+
+;; Which key
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
+
+
+;; Yasnippet
+(use-package yasnippet)
+
+
+;; VCS stuff
+(use-package magit)
+(use-package monky)
+(use-package treemacs-magit)
+
+
+;;----------------------------------------------------------------------
+;; Languages
+;;----------------------------------------------------------------------
+
+;; Rust
 (setenv "RUST_LOG" "rls=debug")
 (use-package rust-mode
   :config
   (setq rust-format-on-save t)
   )
-(use-package
-  flycheck-rust
+(use-package flycheck-rust
   :hook ('flycheck-mode-hook . #'flycheck-rust-setup)
   )
-(use-package cargo
-  :hook (rust-mode . cargo-minor-mode))
-(use-package flycheck-rust
-  :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-
-(use-package yasnippet)
-
-(use-package lsp-mode
-  :hook
-  (python-mode . lsp)
-  (rust-mode . lsp)
-  :commands lsp
-  :config
-  (setq lsp-enable-file-watchers nil)
-  (setq lsp-rust-clear-env-rust-log nil)
-  (setq lsp-prefer-capf t)
-  (setq lsp-completion-enable t)
-  (setq lsp-idle-delay 0.500)
-  )
-(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-(use-package lsp-ui  :commands lsp-ui-mode)
-(use-package company-lsp :commands company)
+(use-package cargo :hook (rust-mode . cargo-minor-mode))
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
@@ -196,14 +243,36 @@
   :init (setq markdown-command "multimarkdown"))
 
 
-;; VCS stuff
-(use-package magit)
-(use-package monky)
-(use-package treemacs-magit)
+;; Toml
+(use-package toml-mode )
 
+
+;; LSP mode
+
+(use-package lsp-mode
+  :commands lsp lsp-deferred
+  :hook
+  ;(python-mode . lsp)
+  (rust-mode . lsp-deferred)
+  :init
+  (setq
+   lsp-keymap-prefix "\C-c l"
+   lsp-enable-file-watchers nil
+   lsp-enable-xref t
+   lsp-prefer-capf t
+   lsp-completion-enable t
+   lsp-idle-delay 0.500
+   )
+   )
+(use-package lsp-ui :init (setq  lsp-ui-doc-enable t))
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+;;----------------------------------------------------------------------
 (ignore-errors
   (server-start))
 
+;;----------------------------------------------------------------------
 (ignore-errors
   (load-theme 'spacemacs-dark t))
 ;;(setq spacemacs-theme-org-agenda-height nil)
