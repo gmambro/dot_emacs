@@ -33,10 +33,17 @@
 (setq exec-path (append exec-path '( (expand-file-name  "~/.local/bin")
                                      (expand-file-name "~/.cargo/bin"))))
 
+
 ;;----------------------------------------------------------------------
 
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
+
+;; Have highlighting all the time
+(global-font-lock-mode 1)
+
+;; use spaces, not tabs for indenting
+(setq-default indent-tabs-mode nil)
 
 ;; UTF8 world
 (prefer-coding-system 'utf-8)
@@ -85,7 +92,7 @@
                          ("org" . "https://orgmode.org/elpa/")
 			 ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("gnu" . "https://elpa.gnu.org/packages/")))
-(package-initialize)
+(when (version< emacs-version "27.0") (package-initialize))
 (unless package-archive-contents
   (package-refresh-contents))
 
@@ -105,18 +112,20 @@
 ;;----------------------------------------------------------------------
 
 ;; Company
-(use-package company)
-;  :after lsp-mode
-;  :hook (lsp-mode . company-mode)
-;  :bind (:map company-active-map
-;         ("<tab>" . company-complete-selection))
-;        (:map lsp-mode-map
-;         ("<tab>" . company-indent-or-complete-common))
-;  :custom
-;  (company-minimum-prefix-length 1)
-;  (company-idle-delay 0.0))
-(use-package company-box
-  :hook (company-mode . company-box-mode))
+(use-package company
+  :init
+  (setq company-tooltip-align-annotations t
+        company-tooltip-limit 12
+        company-idle-delay 0
+        company-echo-delay (if (display-graphic-p) nil 0)
+        company-minimum-prefix-length 2
+        company-require-match nil
+        company-global-modes '(not erc-mode message-mode help-mode
+                                   gud-mode eshell-mode shell-mode)
+        company-backends '((company-capf)
+                           (company-dabbrev-code company-keywords company-files)
+                           company-dabbrev))
+  )
 
 ;; Flycheck
 (use-package flycheck
@@ -158,15 +167,13 @@
 
 ;; Recentf
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
-(use-package recentf
-  :config
-  (setq
-        recentf-max-saved-items 500
-        recentf-max-menu-items 15
-        ;; disable recentf-cleanup on Emacs start, because it can cause
-        ;; problems with remote files
-        recentf-auto-cleanup 'never)
-  (recentf-mode +1))
+(setq
+ recentf-max-saved-items 500
+ recentf-max-menu-items 15
+ ;; disable recentf-cleanup on Emacs start, because it can cause
+ ;; problems with remote files
+ recentf-auto-cleanup 'never)
+(recentf-mode +1)
 
 ;; Treemacs
 (use-package treemacs
@@ -215,7 +222,7 @@
 
 ;; VCS stuff
 (use-package magit)
-(use-package monky)
+;(use-package monky)
 (use-package treemacs-magit)
 
 
@@ -250,23 +257,36 @@
 ;; LSP mode
 
 (use-package lsp-mode
-  :commands lsp lsp-deferred
   :hook
-  ;(python-mode . lsp)
-  (rust-mode . lsp-deferred)
-  :init
-  (setq
-   lsp-keymap-prefix "\C-c l"
-   lsp-enable-file-watchers nil
-   lsp-enable-xref t
-   lsp-prefer-capf t
-   lsp-completion-enable t
-   lsp-idle-delay 0.500
-   )
-   )
-(use-package lsp-ui :init (setq  lsp-ui-doc-enable t))
-(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+  (rust-mode . lsp)
+  :commands (lsp)
+  :custom
+  ( lsp-keymap-prefix "\C-c l")
+  ( lsp-enable-file-watchers nil)
+  ( lsp-enable-xref t)
+  ( lsp-completion-enable t)
+  ( lsp-enable-snippet t)
+  ( lsp-prefer-flymake nil ); Use flycheck instead of flymake
+
+)
+(use-package lsp-ui
+  :after lsp-mode
+  :diminish
+  :commands lsp-ui-mode
+  :bind
+  (:map lsp-ui-mode-map
+        ([remap xref-find-definitions] . lsp-ui-peek-find-definitions) ; M-.
+        ([remap xref-find-references] . lsp-ui-peek-find-references) ; M-?
+        ("C-c u" . lsp-ui-imenu)
+        ("M-i" . lsp-ui-doc-focus-frame))
+  :custom
+  (lsp-ui-peek-enable t)
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-delay 1)
+  (lsp-ui-doc-header t)
+  )
+(use-package lsp-treemacs)
 
 ;;----------------------------------------------------------------------
 (ignore-errors
