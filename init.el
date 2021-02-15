@@ -111,6 +111,8 @@
 
 ;;----------------------------------------------------------------------
 
+(global-set-key "\C-x\ \C-b" 'ibuffer)
+
 ;; Company
 (use-package company
   :init
@@ -265,6 +267,7 @@
   ( lsp-enable-file-watchers nil)
   ( lsp-enable-xref t)
   ( lsp-completion-enable t)
+  ( lsp-enable-completion-at-point t)
   ( lsp-enable-snippet t)
   ( lsp-prefer-flymake nil ); Use flycheck instead of flymake
 
