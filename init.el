@@ -262,15 +262,13 @@
   :hook
   (rust-mode . lsp)
   :commands (lsp)
-  :custom
-  ( lsp-keymap-prefix "\C-c l")
-  ( lsp-enable-file-watchers nil)
-  ( lsp-enable-xref t)
-  ( lsp-completion-enable t)
-  ( lsp-enable-completion-at-point t)
-  ( lsp-enable-snippet t)
-  ( lsp-prefer-flymake nil ); Use flycheck instead of flymake
-
+  :init
+  (setq
+    lsp-keymap-prefix "C-c l"
+    lsp-enable-xref t
+    lsp-completion-enable t
+    lsp-enable-snippet t
+   )
 )
 (use-package lsp-ui
   :after lsp-mode
