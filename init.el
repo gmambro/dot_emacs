@@ -30,9 +30,22 @@
   )
 
 
-(setq exec-path (append exec-path '( (expand-file-name  "~/.local/bin")
-                                     (expand-file-name "~/.cargo/bin"))))
+(let (
+      ( path-list  (list
+                           (expand-file-name "~/.local/bin")
+                           (expand-file-name "~/.cargo/bin")
+                           ))
+      
+      )
+  (setq exec-path (append exec-path path-list))
+  (setenv "PATH"
+          (concat (getenv "PATH") ":"
+		  (mapconcat 'identity path-list ":"))
+	  )
+  )
 
+                     
+                     
 
 ;;----------------------------------------------------------------------
 
@@ -86,8 +99,9 @@
    (quote
     (("org" . 15)
      ("gnu" . 10)
-     ("melpa-stable" . 5)
-     ("melpa" . 0))))
+     ("melpa" . 5)
+     ("melpa-stable" . 0)
+     )))
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
 			 ("melpa-stable" . "https://stable.melpa.org/packages/")
