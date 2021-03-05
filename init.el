@@ -179,6 +179,8 @@
 ;; Org mode
 (use-package org
   :mode ("\\.org$'" . org-mode)
+  :config
+  (setq org-log-done 'time)
   )
 
 ;; Recentf
