@@ -8,7 +8,7 @@
 (setq gc-cons-threshold (* 100 1024 1024)) ;100 MB before garbage collection
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
-
+(setq inhibit-splash-screen t)         ; hide welcome screen
 
 ;;----------------------------------------------------------------------
 ;; Paths and extra config files
@@ -300,5 +300,10 @@
 ;;(setq spacemacs-theme-org-height nil)
 ;; My previous theme (load-theme 'wombat)
 
+(when (eq system-type 'darwin)
+  (global-set-key  (kbd "<end>") 'end-of-line)
+  (global-set-key  (kbd "<home>") 'beginning-of-line)
+  )
+ 
 
 ;;; init.el ends here
