@@ -25,3 +25,4 @@ tutorial
 completions
 flycheck_init.el
 transient
+.lsp*
