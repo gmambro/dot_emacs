@@ -248,6 +248,24 @@
 ;; Languages
 ;;----------------------------------------------------------------------
 
+;; LaTeX
+(use-package tex
+  :ensure auctex
+  :mode
+  ("\\.tex\\'" . latex-mode)
+  :config
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  (setq-default TeX-master nil)
+  
+  (add-hook 'LaTeX-mode-hook 'auto-fill-mode)
+  (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode) 
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  ;;(setq reftex-plug-into-AUCTeX t)
+)
+
+
 ;; Rust
 (setenv "RUST_LOG" "rls=debug")
 (use-package rust-mode
@@ -271,6 +289,32 @@
 ;; Toml
 (use-package toml-mode )
 
+;; Perl
+(defalias 'perl-mode 'cperl-mode)
+;; Use 4 space indents via cperl mode
+(setq
+ cperl-close-paren-offset -4
+ cperl-continued-statement-offset 4
+ cperl-indent-level 4
+ cperl-indent-parens-as-block t
+ cperl-tab-always-indent t)
+
+
+;; Python
+(use-package python )
+(use-package python-mode )
+(use-package python-django)
+(use-package python-environment )
+
+;; Puppet
+(use-package puppet-mode  :mode "\\.pp$")
+
+;; Template Toolkit
+(use-package tt-mode
+  :mode "\\.tt$")
+
+;; YAML
+(use-package yaml-mode :ensure t)
 
 ;; LSP mode
 
@@ -305,9 +349,6 @@
   )
 (use-package lsp-treemacs)
 
-;;----------------------------------------------------------------------
-(ignore-errors
-  (server-start))
 
 ;;----------------------------------------------------------------------
 (ignore-errors
@@ -316,10 +357,32 @@
 ;;(setq spacemacs-theme-org-height nil)
 ;; My previous theme (load-theme 'wombat)
 
+;;----------------------------------------------------------------------
 (when (eq system-type 'darwin)
   (global-set-key  (kbd "<end>") 'end-of-line)
   (global-set-key  (kbd "<home>") 'beginning-of-line)
   )
- 
+
+(setq mac-option-modifier nil)
+
+;; Custom shortcuts
+(global-set-key [(f1)]
+                (lambda (s e)
+                  (interactive "r")
+                  (manual-entry (buffer-substring s e))
+                ))
+(global-set-key [(f5)] 'goto-line)
+
+(defun run-cmd (file)
+  (interactive "sCommand name: ")
+  (if (not (zerop (call-process file nil "* Test *")))
+      (print "error")))
+
+
+;;----------------------------------------------------------------------
+
+(ignore-errors
+  (server-start))
+
 
 ;;; init.el ends here
