@@ -181,7 +181,13 @@
   :mode ("\\.org$'" . org-mode)
   :config
   (setq org-log-done 'time)
-  )
+  :bind
+  (
+   ("C-c a" . org-agenda)
+   ("<f6>"  . org-capture)
+   :map org-mode-map
+   ("\C-c <return>" . org-insert-subheading)
+   ))
 
 ;; Recentf
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
