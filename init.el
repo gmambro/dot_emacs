@@ -23,10 +23,10 @@
 ;; (add-to-list 'load-path "~/.emacs.d/lisp/")
 ;; (mapc 'load (file-expand-wildcards "~/.emacs.d/init/*.el"))
 
-;; override local stuff
+;; override local stuff for low level configs, e.g. proxy
 (if
-    (file-exists-p  "~/.emacs.d/localconfig.el")
-    (load "~/.emacs.d/localconfig.el")
+    (file-exists-p  "~/.emacs.d/localenv.el")
+    (load "~/.emacs.d/localenv.el")
   )
 
 
@@ -35,7 +35,6 @@
                            (expand-file-name "~/.local/bin")
                            (expand-file-name "~/.cargo/bin")
                            ))
-      
       )
   (setq exec-path (append exec-path path-list))
   (setenv "PATH"
@@ -44,8 +43,6 @@
 	  )
   )
 
-                     
-                     
 
 ;;----------------------------------------------------------------------
 
@@ -304,6 +301,16 @@
   (lsp-ui-doc-header t)
   )
 (use-package lsp-treemacs)
+
+
+;;----------------------------------------------------------------------
+;; Local overrides
+
+(if
+    (file-exists-p  "~/.emacs.d/localconfig.el")
+    (load "~/.emacs.d/localconfig.el")
+  )
+
 
 ;;----------------------------------------------------------------------
 (ignore-errors
