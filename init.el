@@ -359,8 +359,6 @@
 ;;----------------------------------------------------------------------
 (ignore-errors
   (load-theme 'spacemacs-dark t))
-;;(setq spacemacs-theme-org-agenda-height nil)
-;;(setq spacemacs-theme-org-height nil)
 ;; My previous theme (load-theme 'wombat)
 
 ;;----------------------------------------------------------------------
@@ -368,7 +366,7 @@
   (global-set-key  (kbd "<end>") 'end-of-line)
   (global-set-key  (kbd "<home>") 'beginning-of-line)
   )
-
+(setq mac-right-command-modifier 'meta)
 (setq mac-option-modifier nil)
 
 ;; Custom shortcuts
