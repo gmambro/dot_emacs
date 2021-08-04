@@ -32,9 +32,10 @@
 
 (let (
       ( path-list  (list
-                           (expand-file-name "~/.local/bin")
-                           (expand-file-name "~/.cargo/bin")
-                           ))
+                    "/usr/local/bin"
+                    (expand-file-name "~/.local/bin")
+                    (expand-file-name "~/.cargo/bin")
+                    ))
       )
   (setq exec-path (append exec-path path-list))
   (setenv "PATH"
@@ -251,6 +252,11 @@
 ;; Languages
 ;;----------------------------------------------------------------------
 
+;; Dockerfile
+
+(use-package dockerfile-mode
+  :mode ("Dockerfile\\'" . dockerfile-mode))
+
 ;; LaTeX
 (use-package tex
   :ensure auctex
@@ -302,7 +308,6 @@
  cperl-indent-parens-as-block t
  cperl-tab-always-indent t)
 
-
 ;; Python
 (use-package python )
 (use-package python-mode )
@@ -316,6 +321,21 @@
 (use-package tt-mode
   :mode "\\.tt$")
 
+(use-package terraform-mode
+  :config
+  (setq lsp-terraform-server '( "/usr/local/bin/terraform-ls" "serve"  ))
+  )
+
+;; Web develoment with JS stuff
+(use-package web-mode :mode "\\.[jt]sx?$"
+  )
+;; Prettier.js automatic formatting
+ (use-package prettier-js)
+ (defun web-mode-init-prettier-hook ()
+  (add-node-modules-path)
+  (prettier-js-mode))
+(add-hook 'web-mode-hook 'web-mode-init-prettier-hook)
+
 ;; YAML
 (use-package yaml-mode :ensure t)
 
@@ -324,6 +344,9 @@
 (use-package lsp-mode
   :hook
   (rust-mode . lsp)
+  (javascript-mode . lsp)
+  (terraform-mode .lsp)
+  (web-mode .lsp)
   :commands (lsp)
   :init
   (setq
