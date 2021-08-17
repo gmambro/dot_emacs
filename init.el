@@ -88,6 +88,8 @@
 ;; view simpler column numbers
 (column-number-mode t)
 
+(setq require-final-newline t)
+
 ;;----------------------------------------------------------------------
 ;; bootstrap packages and use-package
 ;;----------------------------------------------------------------------
