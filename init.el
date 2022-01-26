@@ -56,11 +56,6 @@
 ;; use spaces, not tabs for indenting
 (setq-default indent-tabs-mode nil)
 
-;; In addition ns-alternative-modifier can be set to 'none, which lets
-;; it get interpreted by the OS so it can be used to input special
-;; characters.
-(setq ns-alternative-modifer 'none)
-
 ;; UTF8 world
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
@@ -402,12 +397,11 @@
 (when (eq system-type 'darwin)
   (global-set-key  (kbd "<end>") 'end-of-line)
   (global-set-key  (kbd "<home>") 'beginning-of-line)
+  
+  (setq mac-right-command-modifier 'meta)
+  ;; This allows me to enter {} using Shift+RightOption on Italian Mac Keyboard
+  (setq mac-right-option-modifier 'none)
   )
-
-(setq mac-right-command-modifier 'meta)
-(setq mac-option-modifier nil)
-(setq ns-right-meta-modifier none)
-
 
 ;; Custom shortcuts
 (global-set-key [(f1)]
