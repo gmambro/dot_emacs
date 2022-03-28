@@ -259,6 +259,15 @@
 (use-package dockerfile-mode
   :mode ("Dockerfile\\'" . dockerfile-mode))
 
+;; Go - lsp-mode
+;; Set up before-save hooks to format buffer and add/delete imports.
+(use-package go-mode
+  :config
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t)
+)
+
+
 ;; LaTeX
 (use-package tex
   :ensure auctex
@@ -384,11 +393,6 @@
     (file-exists-p  "~/.emacs.d/localconfig.el")
     (load "~/.emacs.d/localconfig.el")
   )
-
-
-;;----------------------------------------------------------------------
-(ignore-errors
-  (server-start))
 
 ;;----------------------------------------------------------------------
 (ignore-errors
